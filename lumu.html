@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>橹穆 · 双木成舟 · 时间线</title>
+  <!-- 优雅字体 & 基础样式 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fcf7f0;
+      font-family: 'Quicksand', 'Segoe UI', sans-serif;
+      color: #2d2a24;
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* 粒子背景 — 精确 #aee4ff → #ffccd5 */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 30%, #aee4ff 0%, #ffccd5 90%);
+      opacity: 0.85;
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* 头部 — 橹穆 */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 4.5rem;
+      letter-spacing: 4px;
+      color: #3a322a;
+      text-shadow: 2px 2px 0 rgba(180, 140, 110, 0.1);
+      position: relative;
+      display: inline-block;
+    }
+
+    .header h1::after {
+      content: "🩵🩷";
+      font-size: 2.8rem;
+      margin-left: 12px;
+      opacity: 0.5;
+      display: inline-block;
+      transform: rotate(10deg);
+    }
+
+    .subhead {
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 6px;
+      color: #3f6b8a;
+      margin-top: -0.2rem;
+      border-top: 1px solid #b3d9f0;
+      border-bottom: 1px solid #b3d9f0;
+      display: inline-block;
+      padding: 0.4rem 2rem;
+      background: rgba(235, 248, 255, 0.5);
+      backdrop-filter: blur(2px);
+      border-radius: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .subhead i {
+      font-style: italic;
+      font-weight: 400;
+      color: #a07a84;
+    }
+
+    /* 卡片网格 — 双人展示 (并行) */
+    .cp-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2.5rem;
+      width: 100%;
+      margin: 2.5rem 0 3rem;
+    }
+
+    .cp-card {
+      flex: 1 1 280px;
+      max-width: 340px;
+      background: rgba(250, 248, 252, 0.7);
+      backdrop-filter: blur(6px);
+      border-radius: 48px 48px 32px 32px;
+      box-shadow: 0 20px 40px -12px rgba(60, 45, 30, 0.12), 0 4px 18px rgba(0,0,0,0.03);
+      padding: 2rem 1.8rem 2.2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(195, 210, 225, 0.5);
+      position: relative;
+    }
+
+    .cp-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 50px -16px rgba(70, 80, 100, 0.2);
+      background: rgba(252, 250, 255, 0.9);
+      border-color: #b0c8db;
+    }
+
+    .cp-card .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #d4dce6;
+      margin: 0 auto 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.8rem;
+      box-shadow: 0 8px 0 #b0bac8, 0 12px 24px -8px rgba(60, 70, 80, 0.15);
+      transition: 0.2s;
+      background: #e4ebf2;
+      border: 2px solid #f0f5fa;
+    }
+
+    .cp-card:nth-child(1) .avatar {
+      background: #d7e2ee;
+      color: #3d4b5a;
+    }
+    .cp-card:nth-child(2) .avatar {
+      background: #f0dce6;
+      color: #5a4a54;
+    }
+
+    .cp-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 0.2rem;
+      color: #2f281f;
+    }
+
+    .cp-card .role {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #7a8b9a;
+      background: rgba(180, 200, 215, 0.25);
+      display: inline-block;
+      padding: 0.2rem 1.2rem;
+      border-radius: 30px;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+    }
+
+    .cp-card .desc {
+      font-size: 1rem;
+      font-weight: 300;
+      color: #3f3f4a;
+      line-height: 1.6;
+      padding: 0 0.2rem;
+    }
+
+    .cp-card .desc i {
+      font-style: italic;
+      color: #7a7f8f;
+    }
+
+    .cp-card .tag {
+      margin-top: 1.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 0.8rem;
+    }
+
+    .cp-card .tag span {
+      background: #e2eaf2;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: #3b4a57;
+      font-weight: 600;
+      text-transform: uppercase;
+      border: 1px solid #c7d5e0;
+    }
+
+    /* ===== 新增：时间线梳理板块 ===== */
+    .timeline-section {
+      width: 100%;
+      max-width: 900px;
+      margin: 1.5rem 0 2.5rem;
+      padding: 1.8rem 2rem 2.5rem;
+      background: rgba(250, 248, 252, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 48px 48px 32px 32px;
+      border: 1px solid rgba(195, 210, 225, 0.4);
+      box-shadow: 0 8px 24px -8px rgba(60, 70, 80, 0.06);
+    }
+
+    .timeline-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      /* 跳色： #aee4ff 和 #ffccd5 */
+      background: linear-gradient(135deg, #aee4ff 0%, #aee4ff 40%, #ffccd5 60%, #ffccd5 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 12px rgba(174, 228, 255, 0.15);
+      display: inline-block;
+      padding: 0 0.5rem;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #aee4ff, #ffccd5) 1;
+      border-image-slice: 1;
+      padding-bottom: 0.3rem;
+    }
+
+    .timeline-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .timeline-chapter {
+      background: rgba(255, 252, 248, 0.5);
+      backdrop-filter: blur(2px);
+      border-radius: 28px;
+      padding: 1.2rem 1.8rem 1.5rem;
+      border-left: 6px solid #aee4ff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: all 0.2s;
+    }
+
+    .timeline-chapter:nth-child(even) {
+      border-left-color: #ffccd5;
+    }
+
+    .timeline-chapter h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #3a3a4a;
+      margin-bottom: 0.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+    }
+
+    .timeline-chapter h4 .chapter-label {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #7a8a9a;
+      background: rgba(200, 215, 230, 0.3);
+      padding: 0.1rem 1rem;
+      border-radius: 30px;
+      letter-spacing: 1px;
+    }
+
+    .timeline-chapter .date-tag {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #6a7f8e;
+      background: rgba(174, 228, 255, 0.15);
+      padding: 0.1rem 0.8rem;
+      border-radius: 30px;
+      border: 1px solid rgba(174, 228, 255, 0.2);
+    }
+
+    .timeline-chapter p {
+      font-weight: 300;
+      color: #3f4350;
+      margin-top: 0.4rem;
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .timeline-chapter p strong {
+      font-weight: 600;
+      color: #2d3a4a;
+    }
+
+    .timeline-chapter .highlight {
+      display: inline-block;
+      background: rgba(255, 204, 213, 0.2);
+      padding: 0.05rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 400;
+      color: #7a4a5a;
+    }
+
+    .timeline-chapter ul {
+      margin-top: 0.5rem;
+      padding-left: 1.5rem;
+      list-style: none;
+    }
+
+    .timeline-chapter ul li {
+      position: relative;
+      padding-left: 1.2rem;
+      margin-bottom: 0.3rem;
+      font-weight: 300;
+      color: #3f4350;
+      font-size: 0.95rem;
+    }
+
+    .timeline-chapter ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #a0b8ce;
+      font-weight: 700;
+    }
+
+    .timeline-chapter .quote-line {
+      font-style: italic;
+      color: #5a6a7a;
+      background: rgba(200, 215, 230, 0.15);
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      border-left: 3px solid #aee4ff;
+    }
+
+    /* 故事 / 合辑 (保留) */
+    .story-section {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(245, 248, 252, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 60px 60px 40px 40px;
+      padding: 2.5rem 2rem;
+      margin: 1.2rem 0 2.8rem;
+      box-shadow: 0 10px 30px -10px rgba(80, 90, 110, 0.08);
+      border: 1px solid rgba(190, 210, 225, 0.4);
+      text-align: center;
+    }
+
+    .story-section h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #3e3a4a;
+      letter-spacing: 2px;
+      margin-bottom: 0.8rem;
+    }
+
+    .story-section h3 small {
+      font-size: 1rem;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 300;
+      color: #6a8296;
+      display: block;
+      margin-top: 0.2rem;
+      letter-spacing: 4px;
+    }
+
+    .story-section p {
+      font-weight: 300;
+      color: #3f4350;
+      max-width: 600px;
+      margin: 0.8rem auto;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .story-section .quote {
+      font-style: italic;
+      font-size: 1.3rem;
+      font-family: 'Playfair Display', serif;
+      color: #5a758a;
+      background: rgba(215, 230, 245, 0.25);
+      padding: 0.6rem 1.5rem;
+      border-radius: 60px;
+      display: inline-block;
+      margin-top: 0.5rem;
+      border-left: 4px solid #92b6ce;
+      border-right: 4px solid #92b6ce;
+    }
+
+    /* 诗意分隔 (保留) */
+    .poem-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      margin: 1rem 0 2rem;
+      width: 100%;
+      max-width: 500px;
+      color: #6f8da0;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+
+    .poem-divider .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #aac9df, transparent);
+    }
+
+    /* 底部 */
+    .footer {
+      margin-top: 2.5rem;
+      padding: 1.2rem 0 0.2rem;
+      border-top: 1px solid #c8d8e5;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      font-weight: 300;
+      color: #6e7e8e;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    .footer span {
+      opacity: 0.8;
+    }
+
+    .footer .heart {
+      color: #c98f9f;
+      animation: pulse 2s infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    /* 响应式 */
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 3.2rem;
+        letter-spacing: 2px;
+      }
+      .header h1::after {
+        font-size: 2rem;
+        margin-left: 6px;
+      }
+      .subhead {
+        font-size: 0.9rem;
+        letter-spacing: 3px;
+        padding: 0.2rem 1.2rem;
+      }
+      .cp-card {
+        flex: 1 1 100%;
+        max-width: 340px;
+        padding: 1.8rem 1.2rem;
+      }
+      .cp-card .avatar {
+        width: 90px;
+        height: 90px;
+        font-size: 3rem;
+      }
+      .timeline-section {
+        padding: 1.2rem 1rem 1.8rem;
+        border-radius: 32px;
+      }
+      .timeline-header {
+        font-size: 1.8rem;
+      }
+      .timeline-chapter {
+        padding: 1rem 1.2rem 1.2rem;
+      }
+      .timeline-chapter h4 {
+        font-size: 1.2rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+      }
+      .story-section {
+        padding: 1.8rem 1rem;
+        border-radius: 40px;
+      }
+      .story-section h3 {
+        font-size: 1.5rem;
+      }
+      .poem-divider {
+        font-size: 0.95rem;
+        gap: 0.8rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .header h1 {
+        font-size: 2.6rem;
+      }
+      .cp-card h2 {
+        font-size: 1.8rem;
+      }
+      .timeline-header {
+        font-size: 1.5rem;
+      }
+    }
+
+    .floating-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 2rem;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+      transform: rotate(8deg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 动态粒子画布 -->
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="app">
+    <!-- 主标题 -->
+    <header class="header">
+      <h1>橹穆</h1>
+      <div class="subhead"><i>· 深潭爱上瀑布 ·</i></div>
+    </header>
+
+    <!-- 双人卡片 (并行：左橹 右穆) -->
+    <div class="cp-grid">
+      <!-- 橹 · 卡 (左) -->
+      <div class="cp-card">
+        <div class="avatar">🐶</div>
+        <h2>橹</h2>
+        <div class="role">· 守望者 ·</div>
+        <div class="desc">
+          <i>“ 棹影斡波，万木相扶 ”</i>
+          <p style="margin-top: 0.6rem; font-weight: 300;">沉稳如古木，心向旷野。<br>在晨雾与星辉间，划出属于自己的航道。</p>
+        </div>
+        <div class="tag">
+          <span>🌲 独立</span>
+          <span>🧭 聪明</span>
+          <span>⚙️ 沉稳</span>
+        </div>
+      </div>
+
+      <!-- 穆 · 卡 (右) -->
+      <div class="cp-card">
+        <div class="avatar">😼</div>
+        <h2>穆</h2>
+        <div class="role">· 行者 ·</div>
+        <div class="desc">
+          <i>“ 穆如清风，温润而泽 ”</i>
+          <p style="margin-top: 0.6rem; font-weight: 300;">柔和如暖阳，目光深远。<br>在四季流转中，守护每一片宁静的涟漪。</p>
+        </div>
+        <div class="tag">
+          <span>☀️ 勇敢</span>
+          <span>🌱 清醒</span>
+          <span>🕊️ 淡然</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 新增：时间线梳理板块 ===== -->
+    <div class="timeline-section">
+      <h3 class="timeline-header">✦ 时间线梳理 ✦</h3>
+      <div class="timeline-grid">
+        <!-- 前言 & 第一章 -->
+        <div class="timeline-chapter">
+          <h4> 壁纸·公之于众 <span class="chapter-label">“大概是天瞧不起我笨，替我泄露半分”</span></h4>
+          <p><span class="date-tag">2019.10.6</span> 穆祉丞作为三代练习生公开。</p>
+          <p><span class="date-tag">2022.10.6</span> 王橹杰作为四代练习生公开。</p>
+          <p><span class="date-tag">2024.12.19</span> 穆祉丞高会发布自拍“有点der”。</p>
+          <p><span class="date-tag">2025.02.15</span> 王橹杰手机壁纸被拍到为穆祉丞，<strong>#王橹杰壁纸是穆祉丞#</strong> 冲上热搜。壁纸此前于2.11、2.14两次被拍到模糊状态。</p>
+        </div>
+
+        <!-- 第二章 新音 -->
+        <div class="timeline-chapter">
+          <h4>2023新音 <span class="chapter-label">缘起</span></h4>
+          <p><span class="date-tag">2023.01.15</span> TF家族新年音乐会，穆祉丞将角落无助的王橹杰拉到舞台前。</p>
+         
+        </div>
+
+        <!-- 第三章 网易云 -->
+        <div class="timeline-chapter">
+          <h4>网易云 · 得意黑 <span class="chapter-label">暗涌</span></h4>
+          <p><span class="date-tag">2022.11.16</span> “得意黑”字体发行，与穆祉丞生日相同。</p>
+          <p><span class="date-tag">2023.08.18</span> 物料中显示王橹杰网名为“得意黑”。</p>                                                                                      <p><span class="date-tag">2023.01.26</span> 官方视频上线，穆祉丞主动走向角落的王橹杰伸手搂他到人群中央。同日王橹杰注册网易云账号，上传穆祉丞AI兔子妆造图。</p>
+          <p><span class="date-tag">2023.11.03</span> 王橹杰在《kimidoll》歌曲下评论 <span class="highlight">“是温柔到极致的病态还是思念成疾的憔悴”</span></p>
+          <p><span class="date-tag">2023.11.13</span> 王橹杰在《Six Forty Seven》歌曲下评论 <span class="highlight">“你的名字永刻地底 我的名字向死而生”</span>（原耽小说台词改编而来）</p>
+          <p><span class="date-tag">2024.04.07</span>王橹杰在《多远都要在一起》 歌曲下针对评论“如果我不是彝族呢，是不是就不会有那么多条条框框阻止我去见你了”回复 <span class="highlight">“俺也一样”</span> </p>
+          <p><span class="date-tag">2024.06.02</span> 王橹杰在《如果爱忘了(live)》歌曲下评论 <span class="highlight">“梦里什么都有 所以我选择摒弃现实”</span></p>
+        </div>
+
+        <!-- 第四章 祝你星途璀璨 -->
+        <div class="timeline-chapter">
+          <h4>祝你星途璀璨 </h4>
+          <p><span class="date-tag">2024.07.02</span> 穆祉丞因出道站内幕情绪崩溃暴走上热搜。</p>
+          <p><span class="date-tag">2024.07.04</span> 纪录片中，工作人员问如果以后不太有机会和师兄们见面，会对他们说什么，大多数人的主语为“他们”、“师兄们”；王橹杰答：<span class="highlight">“祝你星途璀璨”</span>。</p>
+        </div>
+
+        <!-- 第五章 运动会 -->
+        <div class="timeline-chapter">
+          <h4>2024运动会 <span class="chapter-label">祉疼药</span></h4>
+          <p><span class="date-tag">2024.07.06-07.07</span> 王橹杰胃疼到面色发白，但看着玩闹的穆祉丞仍露出笑容，侧身倚靠听穆祉丞与同事交谈后笑了。</p>
+        </div>
+
+        <!-- 第六章 登陆日 -->
+        <div class="timeline-chapter">
+          <h4>登陆日 </h4>
+          <p><span class="date-tag">2024.08.26</span> 马来西亚出道夜。</p>
+          <p><span class="date-tag">2024.08.27</span> 穆祉丞相关词条登上热搜。王橹杰在飞机上被拍到看手机后抹眼泪，下飞机后等待时间双眼含泪，直至上车后继续落泪。</p>
+        </div>
+
+        <!-- 第七章 落叶知秋 -->
+        <div class="timeline-chapter">
+          <h4>落叶知秋 </h4>
+          <p><span class="date-tag">2024.10.01</span> 穆祉丞以TF_ing厂牌成员出道。</p>
+          <p><span class="date-tag">2024.10.21</span> 王橹杰在落叶上写 <span class="highlight">“落叶知秋，我还以为你不说声再见就走了呢”</span>。</p>
+          <p><span class="date-tag">2025.11.16</span> 穆祉丞生日故事集《Eleutheria》第七章：<span class="highlight">“那我就好好地留下来吧”</span> (配图为一片叶子)</p>
+        </div>
+
+        <!-- 第八章 楼道庆生 -->
+        <div class="timeline-chapter">
+          <h4>楼道庆生 <span class="chapter-label">海德薇</span></h4>                                     <p><span class="date-tag">2024.11.15</span> 王橹杰被拍到在车内细心整理海德薇玩偶。</p>
+          <p><span class="date-tag">2024.11.19</span> 王橹杰发布楼道内拿着小油灯及给海德薇吃哈利波特生日蛋糕庆生的照片。经证实，照片拍摄于11.16穆祉丞生日，且小夜灯有三款，海德薇款并非热门款，但王橹杰特意选择。</p>
+        </div>
+
+        <!-- 第十章 不是diss是kiss -->
+        <div class="timeline-chapter">
+          <h4>不是diss是kiss </h4>
+          <p><span class="date-tag">2024.07.06-07.07</span> 王橹杰偷看被抓包，翻了个白眼；穆祉丞刻意放慢脚步想搭话，王橹杰径直走过，穆祉丞只能无奈笑。</p>
+          <p><span class="date-tag">2025.02.11</span> 物料中王橹杰和TF_ing成员互瞪，弹幕：<span class="highlight">“四代要上天啊，连师兄都敢瞪”</span></p>
+        </div>
+
+        <!-- 第十一章 不心动挑战 -->
+        <div class="timeline-chapter">
+          <h4>2025运动会<span class="chapter-label">“紧张吗？”“有点”</span></h4>
+          <p><span class="date-tag">2025.07.12-7.13</span> 拍摄背背卡，和其他师兄弟相比，王橹杰和穆祉丞互动克制内敛。                                                                                                                                          </p>两人不心动挑战中对话：<span class="highlight">“紧张吗？”“有点。”</span></p>
+          <p>运动会期间王橹杰多次偷看穆祉丞，做一样的小动作，触碰穆祉丞接触过的桌面；穆祉丞从王橹杰旁边挤过去。</p>
+        </div>                                                                                                                                                               
+        <!-- 第十二章 913音乐节 -->
+        <div class="timeline-chapter">
+          <h4>913音乐节 </h4>
+          <p><span class="date-tag">2025.09.13</span> 广州南沙音乐节。</p>
+        </div>
+        <!-- 第十三章 我一直都是我 -->
+        <div class="timeline-chapter">
+          <h4>我一直都是我 <span class="chapter-label">自白与回应</span></h4>
+          <p><span class="date-tag">2025.09.14</span> 穆祉丞参加音乐节，在采访中说谢谢支持他的所有粉丝。</p><p><span class="date-tag">2025.09.21</span> 穆祉丞在直播中说：<span class="highlight">“希望每一位爱我的人都能来我的演唱会”。</span></p>
+          <p><span class="date-tag">2025.10.02</span> 穆祉丞高会发布王橹杰被曝壁纸的同款特效自拍，#穆祉丞啥意思# 上热搜。</p>
+          <p><span class="date-tag">2025.10.07</span> 穆祉丞在个人专场手写信：自称 <span class="highlight">“执拗、敏感多疑、不太有安全感的人，为了自我保护而成为一个浑身带刺的刺猬”</span>表示当自我保护时容易伤害到别人。同时感谢每一位爱过他、包容他的人，希望爱他的人在未来的路上能陪伴他一起闯。</p>
+        </div>
+        <!-- 第十四章 莆田音乐节 -->
+        <div class="timeline-chapter">
+          <h4>莆田音乐节 </h4>
+          <p><span class="date-tag">2025.11.09</span> 穆祉丞参加莆田音乐节问当地美食，在所有人大喊卤面的情况下说鱼丸（卤面为当地特色美食之一，鱼丸并不是）</p>
+        </div>
+        <!-- 第十五章 兔子外套 -->
+        <div class="timeline-chapter">
+          <h4>同款兔子外套 </h4>
+          <p><span class="date-tag">2024.12.20</span> 物料中王橹杰穿黑色毛绒兔子外套。</p>
+          <p><span class="date-tag">2025.10.18</span> 穆祉丞穿同款白色兔子外套落地北京。</p>
+          <p><span class="date-tag">2025.11.16</span> 王橹杰再次穿明显小了的穆祉丞同款兔子外套 (当时重庆17度)。</p>
+        </div>
+
+        <!-- 第十六章 多远都要在一起 -->
+        <div class="timeline-chapter">
+          <h4>多远都要在一起 <span class="chapter-label">爱与距离</span></h4>
+          <p><span class="date-tag">2024.05.17</span> 物料中王橹杰唱完《多远都要在一起》后落泪。</p>
+          <p><span class="date-tag">2025.10.02</span> 选择11月考核歌曲为《多远都要在一起》。</p>
+          <p><span class="date-tag">2025.11.15</span> 物料中王橹杰问同事 <span class="highlight">“你觉得爱能克服远距离吗”</span></p>
+          <p><span class="date-tag">2025.10.21</span> 王橹杰坐北京欢乐谷项目“X”战车害怕时一边尖叫一边唱 <span class="highlight">“我能习惯远距离”“身不由己”</span></p>
+          <p><span class="date-tag">2025.11.29</span> 11月考核王橹杰再次唱《多远都要在一起》。</p>
+        </div>
+
+        <!-- 第十七章 懂得都懂 -->
+        <div class="timeline-chapter">
+          <h4>懂得都懂 <span class="chapter-label">爱是魔法</span></h4>
+          <p><span class="date-tag">2025.12.28</span> 物料中王橹杰被问最近有什么开心的事，他回复 <span class="highlight">“我觉得我来到北京，懂得都懂”</span></p>
+          <p>同日采访：<span class="highlight">“邓布利多说爱是世界上最伟大的魔法；我最珍贵的东西是爱。”</span></p>
+          <p><span class="date-tag">2026.01.03</span> 厂牌物料中穆祉丞说 <span class="highlight">“我觉得爱不会永存”</span></p>
+        </div>
+
+        <!-- 第十八至二十章 联排 新音 -->
+        <div class="timeline-chapter">
+          <h4>族综·联排 · 新音 </h4>
+          <p><span class="date-tag">2025.12.20-12.21</span> 族综：穆祉丞塞满嘴小零食，王橹杰看到后扭头憋不住笑了。</p>
+          <p><span class="date-tag">2025.12.22-12.25</span> 联排：美杜莎联排；天魔联排王橹杰脸和脖子变红；双人采访。</p>
+          <p><span class="date-tag">2025.12.26-12.28</span> 新年音乐会：美杜莎舞台；《街舞少年》舞台中穆祉丞下意识想搂师弟却突然收手。</p>                                                                                                  <p><span class="date-tag">2025.12.27</span> 天魔双人舞台：王橹杰比穆祉丞高半个头，王橹杰是歌担，穆祉丞是舞担，最终舞台呈现效果是：王橹杰大幅度屈膝，几乎每个动作都与穆祉丞持平，而高音几乎都由穆祉丞完成。</p>
+          <p><span class="date-tag">2025.12.26</span> 王橹杰看到蓝粉海落泪。</p>                                     <p><span class="date-tag">2026.03.03</span> 元宵音乐会，穆祉丞眼中映出长灯牌，眼角有泪花。</p>
+        </div>
+
+        <!-- 第二十一章 双人合作 -->
+        <div class="timeline-chapter">
+          <h4>“第一次”双人合作 <span class="chapter-label">天魔</span></h4>
+          <p><span class="date-tag">2026.01.17</span> 穆祉丞在vlog中称天魔是 <span class="highlight">“之前没有尝试过的双人舞台，算是全新的体验”</span> (特地打造)。</p>
+        </div>
+
+        <!-- 第二十二章 荣耀之战 -->
+        <div class="timeline-chapter">
+          <h4>荣耀之战 </h4>
+          <p><span class="date-tag">2025.08.17</span> 四公舞台王橹杰看到“橹杰等你和师兄的双人舞台”饭撒牌后轻轻摇头。</p>
+          <p><span class="date-tag">2026.02.01</span> 王橹杰看到“lulu还想和哥哥有双人舞台就摸摸耳朵”的饭撒牌后多次摸耳朵。</p>
+          <p><span class="date-tag">2026.01.31-02.01</span> 摄影师、猫耳等同款饭撒。</p>
+        </div>
+
+        <!-- 第二十三章 隐藏卡背 -->
+        <div class="timeline-chapter">
+          <h4>隐藏卡背 </h4>
+          <p>新音卡包双人隐藏卡背：</p>
+          <p class="quote-line">王橹杰：“新的一年祝你永远闪耀”</p>
+          <p class="quote-line">穆祉丞：“希望你今天过得开心哈哈哈哈”</p>
+          <p>王橹杰其他手写卡背：<span class="highlight">“谢谢你借给我你的光”</span>、<span class="highlight">“祝你永远闪耀 永远明亮”</span></p>
+        </div>
+
+        <!-- 尾声 -->
+        <div class="timeline-chapter" style="border-left-color: #b8a0c0;">
+          <h4>未完待续 </h4>
+          <p style="font-style: italic; color: #5a4a6a;">“我们的故事未完待续”</p>
+          <p style="margin-top: 0.2rem; font-weight: 300; color: #6a5a7a;">—— 王橹杰 · 穆祉丞 ——</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 诗意分隔 (保留) -->
+    <div class="poem-divider">
+      <span class="line"></span>
+      <span>✦ 橹穆 ✦</span>
+      <span class="line"></span>
+    </div>
+
+    <!-- 故事段落 / 共栖 (保留) -->
+    <div class="story-section">
+      <h3>
+        “ 同舟 · 共栖 ”
+        <small>—— 双木成舟 · 橹穆 · 双木成林 ——</small>
+      </h3>
+      <p>
+        一橹一穆，一柔一刚。<br>
+        木与木相倚，根与根交错。<br>
+        在时光的河流上，他们以默契为桨，以信任为帆。
+      </p>                                                                                                                       
+      <p class="quote">
+        “ 你是我行舟的静水，我是你眺望的远山。”
+      </p>                
+      <p class="quote">
+        “缠做同心杰，结成连理祉”
+      </p>
+      <p style="margin-top: 1.2rem; font-size: 0.95rem; opacity: 0.8;">
+        🩵🩷 在每一个清晨与黄昏，彼此成为岸，幸福降临橹穆手心。
+      </p>
+    </div>
+
+    <!-- 底部信息 (保留) -->
+    <div class="footer">
+      <span>🐈‍⬛ 橹 · 木之坚</span>
+      <span class="heart">❤️</span>
+      <span>🦉 穆 · 木之柔</span>
+      <span style="width:100%; margin-top: 0.3rem; opacity: 0.6; font-size:0.75rem; letter-spacing: 1px;">
+        · 橹橹春韵  穆穆良朝 ·
+      </span>
+    </div>
+  </div>
+
+  <!-- 小装饰 -->
+  <div class="floating-icon">⛵</div>
+
+  <script>
+    (function() {
+      // ---------- 粒子系统 (柔和星点) 适配 #aee4ff / #ffccd5 ----------
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+
+      let width, height;
+      let particles = [];
+      const PARTICLE_COUNT = 55;
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        initParticles();
+      }
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 5 + 2,
+            speedX: (Math.random() - 0.5) * 0.18,
+            speedY: (Math.random() - 0.5) * 0.18,
+            opacity: Math.random() * 0.5 + 0.2,
+            color: `rgba(${180 + Math.random() * 60}, ${200 + Math.random() * 50}, ${230 + Math.random() * 25}, ${Math.random() * 0.3 + 0.15})`
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(235, 245, 250, 0.04)';
+        ctx.fillRect(0, 0, width, height);
+
+        for (let p of particles) {
+          p.x += p.speedX;
+          p.y += p.speedY;
+
+          if (p.x < 0 || p.x > width) p.speedX *= -1;
+          if (p.y < 0 || p.y > height) p.speedY *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+          ctx.fillStyle = `rgba(190, 215, 235, ${p.opacity * 0.65})`;
+          ctx.shadowColor = 'rgba(200, 210, 230, 0.2)';
+          ctx.shadowBlur = 14;
+          ctx.fill();
+
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(p.x - 2, p.y - 2, p.radius * 0.3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(245, 225, 235, ${p.opacity * 0.2})`;
+          ctx.fill();
+
+          ctx.shadowBlur = 0;
+        }
+
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      drawParticles();
+
+      // 鼠标/触摸微扰
+      let mouseX = -1000, mouseY = -1000;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        for (let p of particles) {
+          const dx = p.x - mouseX;
+          const dy = p.y - mouseY;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < 80) {
+            const force = (80 - dist) / 800;
+            p.x += (dx / dist) * force * 0.5;
+            p.y += (dy / dist) * force * 0.5;
+          }
+        }
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          const touch = e.touches[0];
+          mouseX = touch.clientX;
+          mouseY = touch.clientY;
+          for (let p of particles) {
+            const dx = p.x - mouseX;
+            const dy = p.y - mouseY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 80) {
+              const force = (80 - dist) / 800;
+              p.x += (dx / dist) * force * 0.5;
+              p.y += (dy / dist) * force * 0.5;
+            }
+          }
+        }
+      }, { passive: true });
+
+    })();
+  </script>
+
+</body>
+</html>
